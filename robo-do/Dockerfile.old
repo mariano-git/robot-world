@@ -1,0 +1,20 @@
+FROM ruby:2.5.1
+
+RUN apt-get update -qq && apt-get install -y cron rsyslog \
+  && apt-get clean autoclean \
+  && apt-get autoremove -y 
+
+COPY robo-do/. /robo-do
+WORKDIR /robo-do
+RUN rm -f Gemfile.lock
+
+RUN bundle install
+
+RUN chmod 0744 /robo-do
+
+RUN bundle exec whenever -c && bundle exec whenever --update-crontab && touch /var/log/cron.log
+
+ENTRYPOINT ["/robo-do/startup.sh"]
+
+CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
+#CMD bash -c "bundle exec whenever --update-crontab && cron -f"

@@ -1,0 +1,420 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API V1",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/v1/factory/bom": {
+      "get": {
+        "summary": "Retrieves a bom",
+        "tags": [
+          "Bom"
+        ],
+        "responses": {
+          "200": {
+            "description": "name found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "photo_url": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "status"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "bom not found"
+          }
+        }
+      }
+    },
+    "/api/v1/factory/car": {
+      "post": {
+        "summary": "Creates a Car from BOM specs",
+        "tags": [
+          "Car"
+        ],
+        "parameters": [
+
+        ],
+        "responses": {
+          "201": {
+            "description": "car created"
+          },
+          "422": {
+            "description": "invalid request"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "serial": {
+                    "type": "string"
+                  },
+                  "modelId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "stage": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "serial",
+                  "modelId",
+                  "status",
+                  "stage"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/factory/car/{carSerial}": {
+      "put": {
+        "summary": "Robo Builder will update the Car with parts on this endpoint",
+        "tags": [
+          "Car"
+        ],
+        "parameters": [
+          {
+            "name": "carSerial",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "car updated"
+          },
+          "422": {
+            "description": "invalid request"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "stage": {
+                    "type": "string"
+                  },
+                  "assemblies": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "component_id": {
+                          "type": "integer"
+                        },
+                        "component_serial": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/{warehouse}": {
+      "get": {
+        "summary": "Gets cars id, serial, model, stage and status from requested warehouse",
+        "tags": [
+          "Inventory"
+        ],
+        "parameters": [
+          {
+            "name": "warehouse",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stage",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "elements found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "serial": {
+                        "type": "string"
+                      },
+                      "modelid": {
+                        "type": "integer"
+                      },
+                      "modelname": {
+                        "type": "string"
+                      },
+                      "warehousename": {
+                        "type": "string"
+                      },
+                      "warehouselocation": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "stage": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "serial",
+                    "modelId",
+                    "modelName",
+                    "status",
+                    "stage"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pos": {
+      "post": {
+        "summary": "Robo Buyer will place their whishes here by model id and operation",
+        "tags": [
+          "Pos"
+        ],
+        "parameters": [
+
+        ],
+        "responses": {
+          "201": {
+            "description": "element created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "carId": {
+                      "type": "integer"
+                    },
+                    "carSerial": {
+                      "type": "string"
+                    },
+                    "modelId": {
+                      "type": "integer"
+                    },
+                    "modelName": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "SOLD",
+                        "FAIL",
+                        "RESERVED"
+                      ]
+                    },
+                    "purchaseId": {
+                      "type": "integer"
+                    },
+                    "requisitionId": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not in stock",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "modelId": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "SOLD",
+                        "FAIL",
+                        "RESERVED"
+                      ]
+                    },
+                    "requisitionId": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "PURCHASE",
+                      "REQUISITION",
+                      "REVENUE"
+                    ]
+                  },
+                  "modelId": {
+                    "type": "integer"
+                  },
+                  "buyer": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "modelId",
+                  "buyer"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/qa/car/{carSerial}": {
+      "get": {
+        "summary": "RoboGuard will check car computer for defects and get the results",
+        "tags": [
+          "QA"
+        ],
+        "parameters": [
+          {
+            "name": "carSerial",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "elements found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "serial": {
+                      "type": "string"
+                    },
+                    "modelName": {
+                      "type": "string"
+                    },
+                    "defect": {
+                      "type": "object",
+                      "properties": {
+                        "computerName": {
+                          "type": "string"
+                        },
+                        "diagnostic": {
+                          "type": "string",
+                          "enum": [
+                            "ok",
+                            "fail"
+                          ]
+                        },
+                        "failedComponent": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "string"
+                            },
+                            "assemblyId": {
+                              "type": "integer"
+                            },
+                            "serial": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
